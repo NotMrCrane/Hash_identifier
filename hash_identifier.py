@@ -1,3 +1,5 @@
+import string
+
 hash_value = input("Write your hash: ")
 
 
@@ -8,12 +10,18 @@ def identify_hash(hash_value):
         64: ["SHA-256"]
     }
 
+    if hash_value.startswith(("$2a$", "$2b$", "$2y$")):
+        return ["bcrypt"]
+
     hash_length = len(hash_value)
 
-    if hash_length in hash_lengths:
-        return hash_lengths[hash_length]
+    if hash_length not in hash_lengths:
+        return ["Unknown hash"]
 
-    return ["Unknown hash"]
+    if not all(c in string.hexdigits for c in hash_value):
+        return ["Unknown hash"]
+
+    return hash_lengths[hash_length]
 
 
 result = identify_hash(hash_value)
