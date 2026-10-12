@@ -13,7 +13,16 @@ def identify_hash(hash_value):
     hash_length = len(hash_value)
 
     if hash_value.startswith(("$2a$", "$2b$", "$2y$")) and hash_length == 60:
-        return ["bcrypt"]
+
+        cost = hash_value[4:6]
+
+        if (
+            cost.isascii()
+            and cost.isdigit()
+            and 4 <= int(cost) <= 31
+            and hash_value[6] == "$"
+        ):
+            return ["bcrypt"]
 
     if hash_length not in HASH_LENGTHS:
         return ["Unknown hash"]

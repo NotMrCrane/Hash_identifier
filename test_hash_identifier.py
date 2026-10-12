@@ -24,10 +24,24 @@ def test_invalid_bcrypt():
 
     assert result == ["Unknown hash"]
 
-if __name__ == "__main__":
-    test_md5()
-    test_invalid()
-    test_bcrypt()
-    test_invalid_bcrypt()
+def test_bcrypt_invalid_cost():
+    bcrypt_input = "$2b$xx$" + "a" * 53
 
-    print("All 4 tests passed!")
+    result = identify_hash(bcrypt_input)
+
+    assert result == ["Unknown hash"]
+
+def test_bcrypt_invalid_cost_range():
+    bcrypt_input = "$2b$99$" + "a" * 53
+
+    result = identify_hash(bcrypt_input)
+
+    assert result == ["Unknown hash"]
+
+
+def test_bcrypt_invalid_separator():
+    bcrypt_input = "$2b$12x" + "a" * 53
+
+    result = identify_hash(bcrypt_input)
+
+    assert result == ["Unknown hash"]
