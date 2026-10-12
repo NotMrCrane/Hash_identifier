@@ -1,28 +1,30 @@
 import string
 
-hash_value = input("Write your hash: ")
-
-
-def identify_hash(hash_value):
-    hash_lengths = {
+HASH_LENGTHS = {
         32: ["MD5", "NTLM", "MD4"],
         40: ["SHA-1"],
         64: ["SHA-256"]
     }
 
-    if hash_value.startswith(("$2a$", "$2b$", "$2y$")):
-        return ["bcrypt"]
+
+
+def identify_hash(hash_value):
 
     hash_length = len(hash_value)
 
-    if hash_length not in hash_lengths:
+    if hash_value.startswith(("$2a$", "$2b$", "$2y$")) and hash_length == 60:
+        return ["bcrypt"]
+
+    if hash_length not in HASH_LENGTHS:
         return ["Unknown hash"]
 
     if not all(c in string.hexdigits for c in hash_value):
         return ["Unknown hash"]
 
-    return hash_lengths[hash_length]
+    return HASH_LENGTHS[hash_length]
 
 
-result = identify_hash(hash_value)
-print(result)
+if __name__ == "__main__":
+    hash_value = input("Write your hash: ")
+    result = identify_hash(hash_value)
+    print(result)
