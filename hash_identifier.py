@@ -9,19 +9,37 @@ HASH_LENGTHS = {
 BCRYPT_CHARSET = "./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
 def is_bcrypt_format(hash_value):
-    hash_length = len(hash_value)
 
-    if hash_value.startswith(("$2a$", "$2b$", "$2y$")) and hash_length == 60:
+    # 1. Check the total length
+    if len(hash_value) != 60:
+        return False
 
-        cost = hash_value[4:6]
-        bcrypt_data = hash_value[7:]
-    
-        if (cost.isascii() and cost.isdigit() and 4 <= int(cost) <= 31 and hash_value[6] == "$"):
-            if not all(c in BCRYPT_CHARSET for c in bcrypt_data):
-                return False
-            return True
+    # 2. Check the bcrypt prefix
+    if not hash_value.startswith(("$2a$", "$2b$", "$2y$")):
+        return False
 
-    return False
+    # 3. Extract the cost and encoded data
+    cost = hash_value[4:6]
+    bcrypt_data = hash_value[7:]
+
+    # 4. Check that the cost contains ASCII digits
+    if not (cost.isascii() and cost.isdigit()):
+        return False
+
+    # 5. Check that the cost is between 4 and 31
+    if not 4 <= int(cost) <= 31:
+        return False
+
+    # 6. Check the separator after the cost
+    if hash_value[6] != "$":
+        return False
+
+    # 7. Check allowed characters
+    if not all(c in BCRYPT_CHARSET for c in bcrypt_data):
+        return False
+
+    # 8. All checks passed
+    return True
 
 def identify_hash(hash_value):
 
