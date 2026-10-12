@@ -45,3 +45,10 @@ def test_bcrypt_invalid_separator():
     result = identify_hash(bcrypt_input)
 
     assert result == ["Unknown hash"]
+
+def test_bcrypt_invalid_characters():
+    bcrypt_input = "$2b$12$" + "a" * 52 + "!"
+
+    result = identify_hash(bcrypt_input)
+
+    assert result == ["Unknown hash"]
